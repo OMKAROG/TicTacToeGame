@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TicTacToe</title>
+  <style>
+    * {
+      font-family: "Fredoka", sans-serif;
+      margin: 0;
+    }
+
+    header {
+      font-weight: 500;
+      font-size: larger;
+      text-align: center;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      color: blue;
+      margin-top: 25px;
+    }
+
+    body {
+      background-color: rgb(207, 232, 222);
+    }
+
+    #mainContainer {
+      background-color: black;
+      /* width: 70vw; */
+      height: 70vh;
+      width: 70vh;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      /* border: 1px solid black; */
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .items {
+
+      width: 30%;
+      height: 30%;
+      border: 0;
+      margin-left: 1.66%;
+      margin-right: 1.66%;
+      margin-top: calc(70vh*0.0166);
+      margin-bottom: calc(70vh*0.0166);
+      border-radius: 10px;
+      background-color: rgb(186, 249, 255);
+      cursor: pointer;
+    }
+
+    #GameResult {
+
+      text-align: center;
+
+    }
+
+    #playAnother {
+      background-color: rgb(7, 218, 7);
+      height: 5vh;
+      border-radius: 5px;
+      border: 0;
+      cursor: pointer;
+      position: absolute;
+      left: 70%;
+      top: 8%;
+      font-size: medium;
+      border: 1px solid;
+
+    }
+
+    #playAnother:hover {
+      scale: 1.1;
+      transition: 0.3s;
+
+    }
+
+    #stats {
+      position: absolute;
+      top: 86%;
+      left: 50%;
+    }
+
+    #clearResult {
+      background-color: rgb(255, 86, 86);
+      border: 0;
+      border-radius: 2px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #clearResult:hover {
+      scale: 1.1;
+      transition: 0.3s;
+    }
+  </style>
+
+
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@300..700&family=Jersey+25+Charted&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Savate:ital,wght@0,200..900;1,200..900&family=Silkscreen:wght@400;700&family=WDXL+Lubrifont+SC&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <header>Tic Tac Toe Game....</header>
+  <div id="mainContainer">
+    <button id="b00" class="items" onclick="play(this.id)"></button>
+    <button id="b01" class="items" onclick="play(this.id)"></button>
+    <button id="b02" class="items" onclick="play(this.id)"></button>
+    <button id="b10" class="items" onclick="play(this.id)"></button>
+    <button id="b11" class="items" onclick="play(this.id)"></button>
+    <button id="b12" class="items" onclick="play(this.id)"></button>
+    <button id="b20" class="items" onclick="play(this.id)"></button>
+    <button id="b21" class="items" onclick="play(this.id)"></button>
+    <button id="b22" class="items" onclick="play(this.id)"></button>
+  </div>
+  <span>
+    <h1 id="GameResult"></h1>
+  </span>
+  <button id="playAnother" onclick="location.reload()">Play Another Game</button>
+
+  <div id="stats">
+    <h4>X wins: <span id="xWins"></span></h4>
+    <h4>O wins: <span id="oWins"></span></h4>
+    <h4>Tie: <span id="ties"></span></h4>
+    <button id="clearResult" onclick="clearResult()">Clear Result</button>
+  </div>
+  <script>
+
+    let xWins = parseInt(localStorage.getItem('xWins')) || 0;
+    let oWins = parseInt(localStorage.getItem('oWins')) || 0;
+    let ties = parseInt(localStorage.getItem('ties')) || 0;
+
+    document.querySelector('#xWins').innerText = xWins;
+    document.querySelector('#oWins').innerText = oWins;
+    document.querySelector('#ties').innerText = ties;
+
+
+    let CurrentPlayer = 'FirstPlayer';
+    const FirstPlayerSymbol = 'X';
+    const SecondPlayerSymbol = 'O';
+    let moves = [['', '', ''],
+    ['', '', ''], ['', '', '']];
+    let totalmoves = 1;
+    function play(id) {
+      totalmoves++;
+      let buttonItem = document.getElementById(id);
+      if (CurrentPlayer === 'FirstPlayer') {
+        buttonItem.innerText = FirstPlayerSymbol;
+        CurrentPlayer = 'SecondPlayer'
+        buttonItem.style.backgroundColor = 'red';
+        buttonItem.style.color = 'white';
+        buttonItem.style.fontSize = '100px';
+        buttonItem.disabled = true;
+      }
+      else {
+        buttonItem.innerText = SecondPlayerSymbol;
+        CurrentPlayer = 'FirstPlayer';
+        buttonItem.style.backgroundColor = 'blue';
+        buttonItem.style.color = 'white';
+        buttonItem.style.fontSize = '100px';
+        buttonItem.disabled = true;
+      }
+
+      let firstindex = parseInt(buttonItem.id.slice(1)[0]);
+      let secondindex = parseInt(buttonItem.id.slice(2)[0]);
+      moves[firstindex][secondindex] = buttonItem.innerText;
+      console.log(firstindex);
+      console.log(secondindex);
+      console.log(moves);
+      Result(firstindex, secondindex);
+    }
+
+    function Result(firstindex, secondindex) {
+      let result = document.querySelector('#GameResult');
+      // corresponding row
+      if ((moves[firstindex][secondindex] === moves[firstindex][0]) && (moves[firstindex][secondindex] === moves[firstindex][1]) && (moves[firstindex][secondindex] === moves[firstindex][2])) {
+        result.innerText = `${moves[firstindex][secondindex]} has won`;
+        if (moves[firstindex][secondindex] === 'X') {
+          result.style.color = 'red';
+          xWins++;
+          localStorage.setItem('xWins', xWins);
+          document.querySelector('#xWins').innerText = xWins;
+        }
+        else {
+          result.style.color = 'blue';
+          oWins++;
+          localStorage.setItem('oWins', oWins);
+          document.querySelector('#oWins').innerText = oWins;
+        }
+        DisableButtons();
+        return;
+
+      }
+      // corresponding column
+      else if ((moves[firstindex][secondindex] === moves[0][secondindex]) && (moves[firstindex][secondindex] === moves[1][secondindex]) && (moves[firstindex][secondindex] === moves[2][secondindex])) {
+        result.innerText = `${moves[firstindex][secondindex]} has won`;
+        if (moves[firstindex][secondindex] === 'X') {
+          result.style.color = 'red';
+          xWins++;
+          localStorage.setItem('xWins', xWins);
+          document.querySelector('#xWins').innerText = xWins;
+        }
+        else {
+          result.style.color = 'blue';
+          oWins++;
+          localStorage.setItem('oWins', oWins);
+          document.querySelector('#oWins').innerText = oWins;
+        }
+        DisableButtons();
+        return;
+
+      }
+      // left to right diagonal
+      // only when (0,0) (1,1) (2,2)
+      // firstindex == secondindex
+      else if (firstindex == secondindex) {
+        if ((moves[firstindex][secondindex] === moves[0][0]) && (moves[firstindex][secondindex] === moves[1][1]) && (moves[firstindex][secondindex] === moves[2][2])) {
+          result.innerText = `${moves[firstindex][secondindex]} has won`;
+          if (moves[firstindex][secondindex] === 'X') {
+            result.style.color = 'red';
+            xWins++;
+            localStorage.setItem('xWins', xWins);
+            document.querySelector('#xWins').innerText = xWins;
+          }
+          else {
+            result.style.color = 'blue';
+            oWins++;
+            localStorage.setItem('oWins', oWins);
+            document.querySelector('#oWins').innerText = oWins;
+          }
+          DisableButtons();
+          return;
+
+        }
+      }
+      // right to left diagonal
+      // only when (0,2) (1,1) (2,0)
+      // firstindex+secondindex==2
+      else if (firstindex + secondindex === 2) {
+        if ((moves[firstindex][secondindex] === moves[0][2]) && (moves[firstindex][secondindex] === moves[1][1]) && (moves[firstindex][secondindex] === moves[2][0])) {
+          result.innerText = `${moves[firstindex][secondindex]} has won`;
+          if (moves[firstindex][secondindex] === 'X') {
+            result.style.color = 'red';
+            xWins++;
+            localStorage.setItem('xWins', xWins);
+            document.querySelector('#xWins').innerText = xWins;
+          }
+          else {
+            result.style.color = 'blue';
+            oWins++;
+            localStorage.setItem('oWins', oWins);
+            document.querySelector('#oWins').innerText = oWins;
+          }
+          DisableButtons();
+          return;
+
+        }
+      }
+      if (totalmoves > 9) {
+        result.innerText = 'Its a tie';
+        ties++;
+        localStorage.setItem('ties', ties);
+        document.querySelector('#ties').innerText = ties;
+      }
+      return;
+
+    }
+
+    function DisableButtons() {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.disabled = true;
+      })
+      console.log('buttons disabled');
+      let playagainbtn = document.querySelector('#playAnother');
+      playagainbtn.disabled = false;
+      let clearResultBtn = document.querySelector('#clearResult');
+      clearResultBtn.disabled = false;
+      return;
+    }
+
+    function clearResult() {
+      localStorage.removeItem('xWins');
+      localStorage.removeItem('oWins');
+      localStorage.removeItem('ties');
+      document.querySelector('#xWins').innerText = 0;
+      document.querySelector('#oWins').innerText = 0;
+      document.querySelector('#ties').innerText = 0;
+      return;
+    }
+
+
+  </script>
+
+</body>
+
+</html>
